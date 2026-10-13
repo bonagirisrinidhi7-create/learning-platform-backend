@@ -1,4 +1,4 @@
-```java
+
 package com.learningplatform.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -21,4 +21,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
     }
 }
-```
