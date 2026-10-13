@@ -1,4 +1,3 @@
-
 package com.learningplatform.controller;
 
 import com.learningplatform.dto.MaterialResponse;
@@ -14,9 +13,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://learning-platform-frontend-beta.vercel.app",
+    "https://learning-platform-frontend-6bo1kg6xa-bonagirisrinidhi7-4236.vercel.app"
+})
 @RequestMapping("/materials")
+
 public class LearningMaterialController {
 
     private final LearningMaterialRepository materialRepository;
