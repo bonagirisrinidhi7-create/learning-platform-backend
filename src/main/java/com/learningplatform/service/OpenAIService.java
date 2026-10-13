@@ -81,7 +81,8 @@ public class OpenAIService {
                                         "content", prompt
                                 )
                         ),
-                        "temperature", 0.2
+                        "temperature", 0.2,
+                        "stream", false
                 ))
                 .retrieve()
                 .body(Map.class);
