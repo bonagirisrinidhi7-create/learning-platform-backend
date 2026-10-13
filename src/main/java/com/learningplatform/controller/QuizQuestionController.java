@@ -9,9 +9,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Locale;
 
+
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
+@CrossOrigin(origins = {
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://learning-platform-frontend-beta.vercel.app",
+    "https://learning-platform-frontend-6bo1kg6xa-bonagirisrinidhi7-4236.vercel.app"
+})
 @RequestMapping("/quiz")
+
 public class QuizQuestionController {
 
     private final QuizQuestionRepository quizQuestionRepository;
