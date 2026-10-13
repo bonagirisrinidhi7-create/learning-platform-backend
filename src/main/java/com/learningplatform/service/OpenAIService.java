@@ -1,9 +1,11 @@
+
 package com.learningplatform.service;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -13,7 +15,7 @@ public class OpenAIService {
 
     public OpenAIService() {
         this.restClient = RestClient.builder()
-                .baseUrl("http://localhost:11434")
+                .baseUrl("https://api.groq.com/openai/v1")
                 .build();
     }
 
@@ -33,14 +35,11 @@ public class OpenAIService {
 
         String prompt = """
                 You are an exam question generator.
-                Read the learning material and create exactly 5 multiple-choice questions.
+                Generate exactly 5 multiple-choice questions based on the material.
 
                 Topic: %s
 
-                Follow this format EXACTLY for every question.
-                Do not write an introduction, summary, outline, or conclusion.
-                Do not use Markdown formatting.
-
+                Follow this format exactly:
                 QUESTION 1: Write the question here
                 A: First option
                 B: Second option
@@ -49,19 +48,11 @@ public class OpenAIService {
                 Correct Answer: A
                 Difficulty: EASY
 
-                QUESTION 2: Write the question here
-                A: First option
-                B: Second option
-                C: Third option
-                D: Fourth option
-                Correct Answer: B
-                Difficulty: MEDIUM
-
                 Continue until QUESTION 5.
-                Each correct answer must be exactly one letter: A, B, C, or D.
-                Questions must be based on the provided material.
-                Every question must have four distinct options.
-                Use EASY, MEDIUM, or HARD for difficulty.
+                Use four distinct options for every question.
+                Correct Answer must be A, B, C, or D.
+                Difficulty must be EASY, MEDIUM, or HARD.
+                Do not include an introduction or conclusion.
 
                 LEARNING MATERIAL:
                 %s
@@ -71,22 +62,40 @@ public class OpenAIService {
     }
 
     private String generateResponse(String prompt) {
+        String apiKey = System.getenv("GROQ_API_KEY");
+
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException(
+                    "GROQ_API_KEY environment variable is missing.");
+        }
+
         Map<?, ?> response = restClient.post()
-                .uri("/api/generate")
+                .uri("/chat/completions")
+                .header("Authorization", "Bearer " + apiKey)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of(
-                        "model", "llama3.1:8b",
-                        "prompt", prompt,
-                        "stream", false
+                        "model", "llama-3.3-70b-versatile",
+                        "messages", List.of(
+                                Map.of(
+                                        "role", "user",
+                                        "content", prompt
+                                )
+                        ),
+                        "temperature", 0.2
                 ))
                 .retrieve()
                 .body(Map.class);
 
-        if (response == null || response.get("response") == null) {
+        if (response == null
+                || !(response.get("choices") instanceof List<?> choices)
+                || choices.isEmpty()
+                || !(choices.get(0) instanceof Map<?, ?> choice)
+                || !(choice.get("message") instanceof Map<?, ?> message)
+                || message.get("content") == null) {
             throw new IllegalStateException(
-                    "Ollama returned an empty response.");
+                    "Groq returned an empty or invalid response.");
         }
 
-        return response.get("response").toString();
+        return message.get("content").toString();
     }
 }
