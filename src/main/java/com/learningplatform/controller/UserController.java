@@ -13,13 +13,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 @RestController
 @CrossOrigin(origins = {
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://learning-platform-frontend-beta.vercel.app"
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://learning-platform-frontend-beta.vercel.app",
+    "https://learning-platform-frontend-6bo1kg6xa-bonagirisrinidhi7-4236.vercel.app"
 })
 public class UserController {
+
 
     private final UserRepository userRepository;
 
